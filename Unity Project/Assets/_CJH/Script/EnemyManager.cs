@@ -6,10 +6,17 @@ public class EnemyManager : MonoBehaviour
 {
     public GameObject enemyFactory;
     public int idx;
-    public GameObject[] spawnPoint;
+    [SerializeField] private GameObject[] spawnPoint;
     float spawnTime = 1.0f;        //스폰타임
     float curTime = 0.0f;          //누적타임
-
+   
+    void Start()
+    {
+        for(int i = 0; i < transform.childCount; i++)
+        {
+            spawnPoint[i] = transform.GetChild(i).gameObject;
+        }
+    }
     // Update is called once per frame
     void Update()
     {
