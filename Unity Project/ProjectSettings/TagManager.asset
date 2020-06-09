@@ -19,7 +19,11 @@ TagManager:
   - Enemy
   - Bullet
   - DestroyZone
+<<<<<<< HEAD
   - E_Bullet
+=======
+  - Boss
+>>>>>>> master
   - 
   - 
   - 
