@@ -15,7 +15,6 @@ public class PlayerFire : MonoBehaviour
     //일정시간동안만 레이져 보여주기
     public float rayTime = 0.3f;
     float timer = 0.0f;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -110,5 +109,10 @@ public class PlayerFire : MonoBehaviour
             }
 
         }
+    }
+
+    public void OnFireButtonClick()
+    {
+        Fire();
     }
 }
