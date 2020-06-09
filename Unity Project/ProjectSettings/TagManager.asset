@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - DestroyZone
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Enemy
   - Bullet
   - DestroyZone
-  - 
+  - E_Bullet
   - 
   - 
   - 
