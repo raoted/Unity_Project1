@@ -12,6 +12,7 @@ public class VariableJoystick : Joystick
 
     private Vector2 fixedPosition = Vector2.zero;
 
+    public Transform player;
     public void SetMode(JoystickType joystickType)
     {
         this.joystickType = joystickType;
@@ -28,6 +29,7 @@ public class VariableJoystick : Joystick
     {
         base.Start();
         fixedPosition = background.anchoredPosition;
+        player = GameObject.Find("Player").GetComponent<Transform>();
         SetMode(joystickType);
     }
 
@@ -51,6 +53,10 @@ public class VariableJoystick : Joystick
 
     protected override void HandleInput(float magnitude, Vector2 normalised, Vector2 radius, Camera cam)
     {
+        if (GameObject.Find("Player"))
+        {
+            transform.position = player.position;
+        }
         if (joystickType == JoystickType.Dynamic && magnitude > moveThreshold)
         {
             Vector2 difference = normalised * (magnitude - moveThreshold) * radius;

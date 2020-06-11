@@ -6,6 +6,8 @@ TagManager:
   tags:
   - DestroyZone
   - Enemy
+  - Bullet
+  - E_Bullet
   layers:
   - Default
   - TransparentFX
@@ -19,11 +21,7 @@ TagManager:
   - Enemy
   - Bullet
   - DestroyZone
-<<<<<<< HEAD
   - E_Bullet
-=======
-  - Boss
->>>>>>> master
   - 
   - 
   - 
