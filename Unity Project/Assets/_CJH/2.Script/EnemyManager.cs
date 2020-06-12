@@ -79,7 +79,7 @@ public class EnemyManager : MonoBehaviour
     {
         GameObject enemy = Instantiate(enemyFactory);
         enemy.SetActive(false);
-        //enemy.hideFlags = HideFlags.HideInHierarchy;
+        enemy.hideFlags = HideFlags.HideInHierarchy;
         enemyPool.Enqueue(enemy);
     }
     public void InsertPool(GameObject _gameObject)

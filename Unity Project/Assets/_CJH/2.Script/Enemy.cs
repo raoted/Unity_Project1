@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 public class Enemy : MonoBehaviour
@@ -16,14 +14,8 @@ public class Enemy : MonoBehaviour
     private bool isDestroy;
     public bool IsDestroy
     {
-        get
-        {
-            return isDestroy;
-        }
-        set
-        {
-            isDestroy = value;
-        }
+        get { return isDestroy; }
+        set { isDestroy = value; }
     }
     void Start()
     {
@@ -50,6 +42,7 @@ public class Enemy : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Bullet"))
         {
+            if(Random.Range(0, 3) == 3) { ItemManager.instance.GetItem(gameObject.transform); }
             gameObject.GetComponent<BoxCollider>().enabled = false;
 
             if (!isDestroy)
