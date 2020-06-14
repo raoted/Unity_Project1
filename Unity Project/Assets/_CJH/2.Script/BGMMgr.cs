@@ -27,7 +27,7 @@ public class BGMMgr : MonoBehaviour
     AudioSource audioSub;       //서브 오디오(BGM 교체)
 
     [Range(0, 1.0f)]            //[]로 만들어져 있는 Attribute라고 하고 인스펙터창 값을 0~1로 고정.
-    public float masterVolume = 1.0f;
+
     float volumeMain = 0.0f;        //메인오디오 볼륨
     float volumeSub = 0.0f;         //서브오디오 볼륨
     float crossFadeTime = 5.0f;     //크로스페이드 타임 5초
@@ -70,8 +70,8 @@ public class BGMMgr : MonoBehaviour
             }
 
             //볼륨조정
-            audioMain.volume = volumeMain * masterVolume;
-            audioSub.volume = volumeSub * masterVolume;
+            audioMain.volume = volumeMain * SoundMgr.Instance.MasterVolume * SoundMgr.Instance.BGMVolume;
+            audioSub.volume = volumeSub * SoundMgr.Instance.MasterVolume * SoundMgr.Instance.BGMVolume;
         }
     }
     //BGM 플레이

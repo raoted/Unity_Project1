@@ -5,9 +5,12 @@ using UnityEngine;
 public class PlayerFire : MonoBehaviour
 {
     public GameObject bulletFactory;    //총알 프리팹
-    public GameObject firePoint;         //총알 발사위치
+    public GameObject lazerFactory;    //총알 프리팹
 
     [SerializeField] private AudioSource audio;
+
+    public AudioClip normal;
+    public AudioClip lazer;
     //레이져를 발사하기 위해서는 라인렌더러가 필요하다
     //선은 최소 2개의 점이 필요하다(시작점, 끝점)
     LineRenderer lr;    //라인렌더러 컴포넌트
@@ -20,18 +23,28 @@ public class PlayerFire : MonoBehaviour
     public float rayTime = 0.3f;
     float timer = 0.0f;
 
+    //총알 종류
+    int bulletType;
+    //1회 공격시 발사하는 총알의 개수
+    int fireCount;
+
     //오브젝트 풀링
-    //오브젝트 풀링에 사용할 최대 총알 갯수
     int poolSize = 20;
-
+    //총알 오브젝트 풀
     private Queue<GameObject> bulletPool;
-
+    private Queue<GameObject> lazerPool;
     public static PlayerFire instance;
     private void Awake() => instance = this;
     // Start is called before the first frame update
     void Start()
     {
+        normal = (AudioClip)Resources.Load("SE/HeavyWeapons3");
+        lazer = (AudioClip)Resources.Load("SE/Laser13");
+
         audio = GetComponent<AudioSource>();
+        audio.clip = normal;
+        audio.volume = SoundMgr.Instance.MasterVolume * SoundMgr.Instance.SEVolume;
+        audio.Stop();
         //라인렌더러 컴포넌트 추가
         lr = GetComponent<LineRenderer>();
         //중요!!!
@@ -41,6 +54,11 @@ public class PlayerFire : MonoBehaviour
         fireTime = 0.0f;
         fireWait = 0.1f;
 
+        //총알 종류 초기화
+        bulletType = 0;
+        //1회 공격시 발사하는 총알의 개수 초기화
+        fireCount = 1;
+
         //오브젝트 풀링 초기화
         InitObjectPooling();
     }
@@ -49,36 +67,27 @@ public class PlayerFire : MonoBehaviour
     private void InitObjectPooling()
     {
         bulletPool = new Queue<GameObject>();
+        lazerPool = new Queue<GameObject>();
         for (int i = 0; i < poolSize; i++)
         {
             MakeBullet();
+            MakeLazer();
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        Fire();
-        //FireRay();
+        if (bulletType == 0) { Fire(); }
+        else if (bulletType == 1) { FireRay(); }
         //일정시간이 지나면 레이져 보여주는 기능 비활성화
         //if (lr.enabled) ShowRay();
-    }
-
-    private void ShowRay()
-    {
-        timer += Time.deltaTime;
-        if (timer > rayTime)
-        {
-            lr.enabled = false;
-            timer = 0.0f;
-        }
     }
 
     //총알발사
     private void Fire()
     {
-        if(Input.touchCount != 0)
+        if (Input.touchCount != 0 || Input.GetButton("Fire1"))
         {
             if (fireTime >= fireWait)
             {
@@ -88,18 +97,23 @@ public class PlayerFire : MonoBehaviour
                 }
                 audio.Play();
 
-                if (bulletPool.Count > 0)
+                for (int i = 0; i < fireCount; i++)
                 {
-                    GameObject bullet = bulletPool.Dequeue();
-                    bullet.SetActive(true);
-                    bullet.transform.position = firePoint.transform.position;
-                    bullet.transform.up = firePoint.transform.up;
-                    fireTime = 0.0f;
+                    if (bulletPool.Count > 0)
+                    {
+                        GameObject bullet = bulletPool.Dequeue();
+                        bullet.GetComponent<Bullet>().setAtk = 3.0f;
+                        bullet.SetActive(true);
+                        bullet.transform.position = transform.GetChild(0).GetChild(i).position;
+                        bullet.transform.up = transform.GetChild(0).up;
+                    }
+                    else
+                    {
+                        MakeBullet();
+                        i--;
+                    }
                 }
-                else
-                {
-                    MakeBullet();
-                }
+                fireTime = 0.0f;
             }
             else
             {
@@ -110,90 +124,110 @@ public class PlayerFire : MonoBehaviour
 
     private void MakeBullet()
     {
-        GameObject bullet = Instantiate(this.bulletFactory);
+        GameObject bullet = Instantiate(bulletFactory);
         bullet.hideFlags = HideFlags.HideInHierarchy;
         bullet.SetActive(false);
         bulletPool.Enqueue(bullet);
+    }
+
+    private void MakeLazer()
+    {
+        GameObject lazer = Instantiate(lazerFactory);
+        lazer.hideFlags = HideFlags.HideInHierarchy;
+        lazer.SetActive(false);
+        lazerPool.Enqueue(lazer);
     }
 
     //레이져발사
     private void FireRay()
     {
         //마우스왼쪽버튼 or 왼쪽컨트롤 키
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButton("Fire1"))
         {
-            //라인렌더러 컴포넌트 활성화
-            lr.enabled = true;
-            //라인 시작점, 끝점
-            lr.SetPosition(0, transform.position);
-            //lr.SetPosition(1, transform.position + Vector3.up * 10);
-            //라인의 끝점은 충돌된 지점으로 변경한다
-
-            //Ray로 충돌처리
-            Ray ray = new Ray(transform.position, Vector3.up);
-            RaycastHit hitInfo; //Ray와 충돌된 오브젝트의 정보를 담는다
-            //Ray랑 충돌된 오브젝트가 있다
-            if (Physics.Raycast(ray, out hitInfo))
+            if (fireTime >= fireWait)
             {
-                //레이져의 끝점 지정
-                lr.SetPosition(1, hitInfo.point);
-                //충돌된 오브젝트 모두 지우기
-                //Destroy(hitInfo.collider.gameObject);
-
-                //디스트로이존의 탑과는 충돌처리 되지 않도록 한다
-                if (hitInfo.collider.name != "Top")
+                if (audio.isPlaying)
                 {
-                    Destroy(hitInfo.collider.gameObject);
+                    audio.Stop();
                 }
+                audio.Play();
 
-                //충돌된 에너미 오브젝트 삭제
-                //프리팹으로 만든 오브젝트 같은경우는 생성될때 클론으로 생성된다
-                //Contains("Enemy") => Enemy(clone) 이런것도 포함함
-                //if (hitInfo.collider.name.Contains("Enemy"))
-                //{
-                //    Destroy(hitInfo.collider.gameObject);
-                //}
-
+                for (int i = 0; i < fireCount; i++)
+                {
+                    if (lazerPool.Count > 0)
+                    {
+                        GameObject lazer = lazerPool.Dequeue();
+                        lazer.GetComponent<Bullet>().setAtk = 1.0f;
+                        lazer.SetActive(true);
+                        lazer.transform.position = transform.GetChild(0).GetChild(i).position;
+                        lazer.transform.up = transform.GetChild(0).up;
+                    }
+                    else
+                    {
+                        MakeLazer();
+                        i--;
+                    }
+                }
+                fireTime = 0.0f;
             }
             else
             {
-                //충돌된 오브젝트가 없으니 끝점을 정해준다
-                lr.SetPosition(1, transform.position + Vector3.up * 10);
+                fireTime += Time.deltaTime;
             }
-
-        }
+        }        
     }
 
-    IEnumerator BulletFire()
-    {
-        if(audio.isPlaying)
-        {
-            audio.Stop();
-        }
-        audio.Play();
-
-        if (bulletPool.Count > 0)
-        {
-            GameObject bullet = bulletPool.Dequeue();
-            bullet.SetActive(true);
-            bullet.transform.position = firePoint.transform.position;
-            bullet.transform.up = firePoint.transform.up;
-        }
-        else
-        {
-            //총알 오브젝트 생성
-            GameObject bullet = Instantiate(this.bulletFactory);
-            bullet.SetActive(false);
-            //bulletPool에 총알 오브젝트 삽입
-            bulletPool.Enqueue(bullet);
-        }
-
-        yield return new WaitForSeconds(0.5f);
-    }
 
     public void InsertBullet(GameObject bulletObject)
     {
         bulletObject.SetActive(false);
         bulletPool.Enqueue(bulletObject);
+    }
+
+    public void InsertLazer(GameObject lazerObject)
+    {
+        lazerObject.SetActive(false);
+        lazerPool.Enqueue(lazerObject);
+    }
+
+    public void ChangeBullet(int i)
+    {
+        if (i == 0) { audio.clip = normal; }
+        else { audio.clip = lazer; }
+
+        if (i == 2)
+        {
+            transform.GetComponent<PlayerClone>().CreateClone();
+        }
+        else if (bulletType == i)
+        { 
+            if (fireCount == 3) { UIManager.instance.AddScore(5); }
+            else
+            {
+                fireCount++;
+
+                for (int count = 0; count < fireCount; count++)
+                {
+                    transform.GetChild(0).GetChild(count).gameObject.SetActive(true);
+                    transform.GetChild(0).GetChild(count).position =
+                        new Vector3(-0.25f * (fireCount - 1) + (0.5f * count) + transform.GetChild(0).position.x,
+                        transform.GetChild(0).position.y, 0);
+                }
+            }
+        }
+        else
+        {
+            //새로 획득한 총알이 기존의 총알과 다르다면
+            //1회 공격시 발사하는 총알의 개수는 1로 바꾼다.
+            bulletType = i;
+            transform.GetChild(0).GetChild(0).position = transform.GetChild(0).position;
+            for (int count = 1; count < fireCount; count++)
+            {
+                transform.GetChild(0).GetChild(i).gameObject.SetActive(false);
+            }
+            fireCount = 1;
+            if (i == 0) { Debug.Log("Normal"); }
+            else { Debug.Log("Ray"); }
+        }
     }
 }

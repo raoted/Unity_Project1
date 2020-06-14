@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour
 {
-    [SerializeField] private GameObject[] itemFactory;
+    [SerializeField] private GameObject normalFactory;
+    [SerializeField] private GameObject lazerFactory;
+    [SerializeField] private GameObject subFactory;
     Queue<GameObject> itemPool;
     private int poolSize;
     private int[] itemType;
@@ -17,7 +19,6 @@ public class ItemManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        itemFactory = new GameObject[3];
         itemType = new int[3];
         maxItem = new int[3];
 
@@ -39,10 +40,32 @@ public class ItemManager : MonoBehaviour
             }
             else
             {
-                GameObject item = itemFactory[selectItem];
-                item.SetActive(false);
-                item.hideFlags = HideFlags.HideInHierarchy;
-                itemPool.Enqueue(item);
+                itemType[selectItem]++;
+                GameObject item;
+                switch(selectItem)
+                {
+                    case 0:
+                        item = Instantiate(normalFactory);
+                        item.transform.GetChild(0).GetComponent<Item>().ItemType = ITEMTYPE.NORMAL;
+                        item.SetActive(false);
+                        item.hideFlags = HideFlags.HideInHierarchy;
+                        itemPool.Enqueue(item);
+                        break;
+                    case 1:
+                        item = Instantiate(lazerFactory);
+                        item.transform.GetChild(0).GetComponent<Item>().ItemType = ITEMTYPE.RAY;
+                        item.SetActive(false);
+                        item.hideFlags = HideFlags.HideInHierarchy;
+                        itemPool.Enqueue(item);
+                        break;
+                    case 2:
+                        item = Instantiate(subFactory);
+                        item.transform.GetChild(0).GetComponent<Item>().ItemType = ITEMTYPE.SUBWEAPON;
+                        item.SetActive(false);
+                        item.hideFlags = HideFlags.HideInHierarchy;
+                        itemPool.Enqueue(item);
+                        break;
+                }
             }
         }
     }
@@ -51,6 +74,8 @@ public class ItemManager : MonoBehaviour
     {
         GameObject item = itemPool.Dequeue();
         item.transform.position = transform.position;
+        item.transform.GetChild(0).GetComponent<Item>().UpSpeed = Random.Range(10.0f, 20.0f);
+        item.transform.GetChild(0).GetComponent<Item>().CurTime = 0;
         item.SetActive(true);
     }
     public void InsertItem(GameObject gameObject)

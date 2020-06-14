@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
     private float time = 0;
     //폭발 이미지를 보여주기 위한 변수
     public GameObject fxFactory;
+    public Collider[] collider = new Collider[3];
     //피격 유무를 저장하는 변수
     private bool isDestroy;
     public bool IsDestroy
@@ -30,6 +31,7 @@ public class Enemy : MonoBehaviour
     {
         if (isDestroy)
         {
+
         }
         else
         {
@@ -42,7 +44,10 @@ public class Enemy : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Bullet"))
         {
-            if(Random.Range(0, 3) == 3) { ItemManager.instance.GetItem(gameObject.transform); }
+            if (Random.Range(0, 5) == 1)
+            {
+                ItemManager.instance.GetItem(gameObject.transform);
+            }
             gameObject.GetComponent<BoxCollider>().enabled = false;
 
             if (!isDestroy)
@@ -52,9 +57,10 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name.Contains("DestroyZone")) 
+        if (collision.gameObject.CompareTag("DestroyZone")) 
         {
             fxFactory.SetActive(false);
             gameObject.SetActive(false);
@@ -72,7 +78,7 @@ public class Enemy : MonoBehaviour
         //Destroy(gameObject, 1.0f); //1초후에 오브젝트 삭제
     }
 
-    void ShowEffect()
+    public void ShowEffect()
     {
         isDestroy = true;
         
@@ -86,6 +92,7 @@ public class Enemy : MonoBehaviour
             gameObject.SetActive(false);
             isDestroy = false;
             EnemyManager.instance.InsertPool(gameObject);
+
         }
         else
         {

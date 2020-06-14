@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Bullet
   - E_Bullet
+  - Item
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - Bullet
   - DestroyZone
   - E_Bullet
-  - 
+  - Item
   - 
   - 
   - 

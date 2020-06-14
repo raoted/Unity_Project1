@@ -10,16 +10,31 @@ public class Boss : MonoBehaviour
 
     public GameObject bulletFactory;        //총알 프리팹
     public GameObject target;               //플레이어 타겟
-    public float fireTime = 1.0f;             //1초에 한번씩 총알발사  
+    public float fireTime = 1.0f;           //1초에 한번씩 총알발사  
     float curTime = 0.0f;
-    public float fireTime1 = 1.5f;            //1.5초에 한번씩 총알발사
+    public float fireTime1 = 1.5f;          //1.5초에 한번씩 총알발사
     float curTime1 = 0.0f;
-    public int bulletMax = 10;
+
+    public int bulletMax = 10;              //원형 공격 패턴에 사용하는 총알 수
+    private bool attackStart = false;
+    private float HP = 300;                   //보스 체력
 
     void Update()
     {
-        AutoFire1();
-        AutoFire2();
+        if (attackStart)
+        {
+            AutoFire1();
+            AutoFire2();
+        }
+        else
+        {
+            iTween.MoveTo(gameObject, new Vector3(0, 5, 0), 2.0f);
+            if(transform.position.y == 5) 
+            {
+                attackStart = true;
+                UIManager.instance.BossHp = HP;
+            }
+        }
     }
 
     //플레이어를 향해서 총알발사
@@ -43,6 +58,28 @@ public class Boss : MonoBehaviour
                 //타이머 초기화
                 curTime = 0.0f;
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Bullet"))
+        {
+            if(other.GetComponent<Bullet>().Demage == 3)
+            {
+                other.gameObject.SetActive(false);
+                PlayerFire.instance.InsertBullet(other.gameObject);
+                HP -= other.GetComponent<Bullet>().Demage;
+            }
+            else
+            {
+                other.gameObject.SetActive(false);
+                PlayerFire.instance.InsertLazer(other.gameObject);
+                HP -= other.GetComponent<Bullet>().Demage;
+            }
+
+            if(HP <= 0) { HP = 0; }
+            UIManager.instance.BossHp = HP;
         }
     }
 

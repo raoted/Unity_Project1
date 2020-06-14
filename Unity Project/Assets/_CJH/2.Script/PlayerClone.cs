@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Boo.Lang.Environments;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,16 +23,16 @@ public class PlayerClone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CreateClone();
-        AutoFire();
+        if (clone.activeSelf)
+        {
+            CreateClone();
+            AutoFire();
+        }
     }
 
-    private void CreateClone()
+    public void CreateClone()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            clone.SetActive(true);
-        }
+        clone.SetActive(true);
     }
 
     private void AutoFire()

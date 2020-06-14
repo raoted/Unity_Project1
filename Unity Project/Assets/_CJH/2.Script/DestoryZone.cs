@@ -19,5 +19,10 @@ public class DestoryZone : MonoBehaviour
             other.gameObject.SetActive(false);
             PlayerFire.instance.InsertBullet(other.gameObject);
         }
+        else if(other.gameObject.CompareTag("Item"))
+        {
+            other.gameObject.SetActive(false);
+            ItemManager.instance.InsertItem(other.gameObject);
+        }
     }
 }
