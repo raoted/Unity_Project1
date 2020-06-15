@@ -56,5 +56,11 @@ public class PlayerMove : MonoBehaviour
             other.gameObject.SetActive(false);
             ItemManager.instance.InsertItem(other.gameObject);
         }
+        else if(other.CompareTag("E_Bullet"))
+        {
+            UIManager.instance.EndGame(0);
+            other.gameObject.SetActive(false);
+            gameObject.SetActive(false);
+        }
     }
 }

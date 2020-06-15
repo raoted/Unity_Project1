@@ -21,7 +21,11 @@ public class Boss : MonoBehaviour
 
     void Update()
     {
-        if (attackStart)
+        if(target.activeSelf == false)
+        {
+
+        }
+        else if (attackStart)
         {
             AutoFire1();
             AutoFire2();
@@ -48,6 +52,7 @@ public class Boss : MonoBehaviour
             {
                 //총알공장에서 총알생성
                 GameObject bullet = Instantiate(bulletFactory);
+                bullet.hideFlags = HideFlags.HideInHierarchy;
                 //총알생성 위치
                 bullet.transform.position = transform.position;
                 //플레이어를 향하는 방향 구하기 (벡터의 뺄셈)
@@ -71,14 +76,18 @@ public class Boss : MonoBehaviour
                 PlayerFire.instance.InsertBullet(other.gameObject);
                 HP -= other.GetComponent<Bullet>().Demage;
             }
-            else
+            else if(other.GetComponent<Bullet>().Demage == 1)
             {
                 other.gameObject.SetActive(false);
                 PlayerFire.instance.InsertLazer(other.gameObject);
                 HP -= other.GetComponent<Bullet>().Demage;
             }
 
-            if(HP <= 0) { HP = 0; }
+            if(HP <= 0) 
+            {
+                HP = 0;
+                UIManager.instance.EndGame(1);
+            }
             UIManager.instance.BossHp = HP;
         }
     }
@@ -97,6 +106,7 @@ public class Boss : MonoBehaviour
                 {
                     //총알공장에서 총알생성
                     GameObject bullet = Instantiate(bulletFactory);
+                    bullet.hideFlags = HideFlags.HideInHierarchy;
                     //총알생성 위치
                     bullet.transform.position = transform.position;
                     //360도 방향으로 총알발사

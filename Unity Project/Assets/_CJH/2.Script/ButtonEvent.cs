@@ -14,7 +14,6 @@ public class ButtonEvent : MonoBehaviour
     }
     public void OnOptionButtonClick()   //Option 버튼에 해당되는 기능 실행
     {
-        startMenu.SetActive(false);
         optionMenu.SetActive(true);
     }
     public void OnExitButtonClick()     //Application 종료
@@ -24,7 +23,6 @@ public class ButtonEvent : MonoBehaviour
     //OptionMenu
     public void OnReturnButtonClick()
     {
-        startMenu.SetActive(true);
         optionMenu.SetActive(false);
 
         PlayerPrefs.SetFloat("MasterVolume", SoundMgr.Instance.MasterVolume);

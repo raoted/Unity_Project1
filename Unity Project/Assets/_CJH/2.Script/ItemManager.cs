@@ -74,7 +74,7 @@ public class ItemManager : MonoBehaviour
     {
         GameObject item = itemPool.Dequeue();
         item.transform.position = transform.position;
-        item.transform.GetChild(0).GetComponent<Item>().UpSpeed = Random.Range(10.0f, 20.0f);
+        item.transform.GetChild(0).GetComponent<Item>().UpSpeed = Random.Range(10.0f, 12.0f);
         item.transform.GetChild(0).GetComponent<Item>().CurTime = 0;
         item.SetActive(true);
     }

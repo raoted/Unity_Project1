@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     public Text score;
     public Text highScore;
     private GameObject warning;
-    private TextMeshPro notice;
+    private GameObject notice;
     private Slider bossHP;
     
     private int intScore;
@@ -42,7 +42,7 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         warning = transform.GetChild(2).gameObject;
-        notice = transform.GetChild(3).GetComponent<TextMeshPro>();
+        notice = transform.GetChild(3).gameObject;
         bossHP = transform.GetChild(4).GetComponent<Slider>();
         if(PlayerPrefs.HasKey("HighScore"))
         {
@@ -98,6 +98,23 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void EndGame(int i)
+    {
+        notice.gameObject.SetActive(true);
+        if(i == 0)
+        {
+            notice.transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+        }
+        else
+        {
+            notice.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+        }
+    }
+
+    public void R2B()
+    {
+        SceneMgr.Instance.LoadScene("StartScene");
+    }
     public void SaveScore()
     {
         if(intScore >= intHighScore)

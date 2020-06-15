@@ -71,6 +71,7 @@ public class Enemy : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Player")) { collision.gameObject.SetActive(false); }
             ShowEffect();
+            UIManager.instance.EndGame(0);
         }
 
         //자기자신도 없애고
